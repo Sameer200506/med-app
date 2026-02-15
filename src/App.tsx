@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ABHA from './pages/ABHA';
 import Upload from './pages/Upload';
+import AbhaHealthData from './pages/AbhaHealthData';
 import { Toaster } from './components/ui/toaster';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -37,6 +38,14 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <Upload />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/abha-health-data"
+                            element={
+                                <ProtectedRoute>
+                                    <AbhaHealthData />
                                 </ProtectedRoute>
                             }
                         />

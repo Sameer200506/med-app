@@ -20,7 +20,7 @@ export default function ABHA() {
             });
             // Small delay to show toast
             setTimeout(() => {
-                navigate('/upload');
+                navigate('/abha-health-data');
             }, 1500);
         }
     };
