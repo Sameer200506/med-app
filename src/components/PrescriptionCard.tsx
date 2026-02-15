@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { analyzePrescription, MedicineAnalysis } from "@/lib/gemini";
+import { analyzePrescription, MedicineAnalysis } from "@/lib/ai";
 import { Loader2, Sparkles } from "lucide-react";
 
 interface PrescriptionProps {
