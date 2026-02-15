@@ -19,16 +19,20 @@ interface PrescriptionProps {
 export function PrescriptionCard({ date, text }: PrescriptionProps) {
     const [analyzing, setAnalyzing] = useState(false);
     const [analysis, setAnalysis] = useState<MedicineAnalysis[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleAnalyze = async () => {
         setAnalyzing(true);
+        setError(null);
+        setAnalysis(null);
         setIsOpen(true); // Open dialog immediately to show loading state
         try {
             const result = await analyzePrescription(text);
             setAnalysis(result);
-        } catch (error) {
-            console.error("Analysis failed:", error);
+        } catch (err) {
+            console.error("Analysis failed:", err);
+            setError(err instanceof Error ? err.message : "An unknown error occurred");
         } finally {
             setAnalyzing(false);
         }
@@ -38,7 +42,9 @@ export function PrescriptionCard({ date, text }: PrescriptionProps) {
         <Card className="w-full flex flex-col">
             <CardHeader>
                 <CardTitle>Prescription</CardTitle>
-                <CardDescription>{new Date(date).toLocaleDateString()}</CardDescription>
+                <CardDescription>
+                    {new Date(date).toLocaleDateString()}
+                </CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
                 <div className="line-clamp-3 text-sm text-muted-foreground mb-4">
@@ -111,11 +117,15 @@ export function PrescriptionCard({ date, text }: PrescriptionProps) {
                                         Disclaimer: AI generated suggestions. Please consult a doctor before taking any medication.
                                     </p>
                                 </div>
-                            ) : (
-                                <div className="text-center py-4 text-red-500">
-                                    Failed to analyze. Please try again.
+                            ) : error ? (
+                                <div className="text-center py-4 text-red-500 overflow-hidden break-words px-4">
+                                    <p className="font-semibold">Analysis Failed</p>
+                                    <p className="text-sm mt-2">{error}</p>
+                                    <Button variant="outline" size="sm" className="mt-4" onClick={handleAnalyze}>
+                                        Try Again
+                                    </Button>
                                 </div>
-                            )}
+                            ) : null}
                         </DialogContent>
                     </Dialog>
                 </div>

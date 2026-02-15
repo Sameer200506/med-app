@@ -1,9 +1,3 @@
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-
-if (!API_KEY) {
-    console.warn("OpenRouter API key is missing");
-}
-
 export interface MedicineAnalysis {
     name: string;
     dosage: string;
@@ -12,58 +6,42 @@ export interface MedicineAnalysis {
 }
 
 export async function analyzePrescription(text: string): Promise<MedicineAnalysis[]> {
-    const prompt = `
-    Analyze the following prescription text and extract the list of medicines. 
-    For each medicine, identify:
-    - Name
-    - Dosage (e.g., 500mg, 1 tablet)
-    - Timing (e.g., morning, night, after food, twice a day)
-    - Any special notes
+    console.log("Simulating AI analysis for:", text);
 
-    Prescription Text:
-    "${text}"
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    Return the result strictly as a JSON array of objects with keys: "name", "dosage", "timing", "notes". 
-    Do not include markdown formatting or backticks. Just the raw JSON string.
-  `;
-
-    try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${API_KEY}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": window.location.origin, // Required by OpenRouter
-                "X-Title": "Medical App", // Optional
-            },
-            body: JSON.stringify({
-                "model": "openai/gpt-oss-120b:free", // User requested model
-                "messages": [
-                    { "role": "user", "content": prompt }
-                ],
-                "temperature": 0.1, // Low temperature for consistent JSON output
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error("OpenRouter API Error:", response.status, errorData);
-            throw new Error(`OpenRouter API failed with status ${response.status}`);
+    // Return fake data based on the user's request for a project demo
+    return [
+        {
+            name: "Amoxyclav 625",
+            dosage: "1 tablet",
+            timing: "After breakfast and dinner (Twice a day)",
+            notes: "Antibiotic for infection"
+        },
+        {
+            name: "Paracetamol 650",
+            dosage: "1 tablet",
+            timing: "After food (SOS - only if fever > 100°F)",
+            notes: "For fever and body pain"
+        },
+        {
+            name: "Pantop 40",
+            dosage: "1 tablet",
+            timing: "Before breakfast (Empty stomach)",
+            notes: "For acidity/gastritis"
+        },
+        {
+            name: "Cetrizine 10mg",
+            dosage: "1 tablet",
+            timing: "At night before sleep",
+            notes: "For allergy/cold"
+        },
+        {
+            name: "Multivitamin",
+            dosage: "1 capsule",
+            timing: "After lunch",
+            notes: "Supplement"
         }
-
-        const data = await response.json();
-        const content = data.choices[0]?.message?.content;
-
-        if (!content) {
-            throw new Error("No content received from AI");
-        }
-
-        // Clean up if there are markdown code blocks (even though we asked not to, models often do)
-        const cleanedText = content.replace(/```json/g, "").replace(/```/g, "").trim();
-
-        return JSON.parse(cleanedText);
-    } catch (error) {
-        console.error("AI Analysis Error:", error);
-        throw new Error("Failed to analyze prescription");
-    }
+    ];
 }
