@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Upload as UploadIcon, FileText } from 'lucide-react';
-import { model, fileToGenerativePart } from '@/lib/gemini';
+import { extractTextFromImage } from '@/lib/ocr';
 import { PrescriptionCard } from '@/components/PrescriptionCard';
 
 interface Prescription {
@@ -38,12 +38,7 @@ export default function Upload() {
 
         setLoading(true);
         try {
-            const imagePart = await fileToGenerativePart(file);
-            const prompt = "Extract all text from this medical prescription. Format it clearly.";
-
-            const result = await model.generateContent([prompt, imagePart]);
-            const response = await result.response;
-            const text = response.text();
+            const text = await extractTextFromImage(file);
 
             const newPrescription: Prescription = {
                 id: Date.now().toString(),
